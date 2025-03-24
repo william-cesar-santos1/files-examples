@@ -56,6 +56,7 @@ public class CustomerFilePersistence extends TextFile implements Writer<Customer
         var content = WRITE_CONVERTER.apply(customer);
         var fileName = customer.getId().toString();
         var file = getFile(fileName)
+                .filter(Files::exists)
                 .orElse(createFile(fileName));
         write(file, content);
     }
@@ -68,8 +69,8 @@ public class CustomerFilePersistence extends TextFile implements Writer<Customer
     }
 
     private Optional<Long> nextId() {
-        return filesInRootFolder().
-                map(file -> file.getFileName().toString())
+        return filesInRootFolder()
+                .map(file -> file.getFileName().toString())
                 .map(fileName -> fileName.replaceAll(EXTENSION, ""))
                 .map(Long::parseLong)
                 .max(Long::compareTo)
