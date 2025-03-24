@@ -11,4 +11,6 @@ public interface SearchCustomerUseCase {
 
     List<Customer> list();
 
+    List<Customer> searchByName(String name);
+
 }

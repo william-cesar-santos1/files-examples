@@ -9,7 +9,7 @@ public class SystemMain {
     public static void main(String[] args) {
         registerAll();
         var customerPersistence = new CustomerFilePersistence();
-        var customerService = new CustomerService(customerPersistence, customerPersistence);
+        var customerService = new CustomerService(customerPersistence, customerPersistence, customerPersistence);
         var view = new CustomerView(customerService, customerService);
         view.show();
     }

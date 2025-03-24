@@ -2,26 +2,26 @@ package br.ada.tech.desenvolva1321.persistence.text;
 
 import br.ada.tech.desenvolva1321.model.Customer;
 import br.ada.tech.desenvolva1321.persistence.Reader;
+import br.ada.tech.desenvolva1321.persistence.SearchByName;
 import br.ada.tech.desenvolva1321.persistence.Writer;
 
 import java.nio.file.Files;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class CustomerFilePersistence extends TextFile implements Writer<Customer>, Reader<Customer> {
+public class CustomerFilePersistence extends TextFile
+        implements Writer<Customer>, Reader<Customer>, SearchByName<Customer> {
 
     private static final String ROOT_FOLDER = "./database/customers";
     private static final Function<String, Customer> READ_CONVERTER = (fileContent) -> {
         var fields = fileContent.split(CONTENT_SEPARATOR);
-        return new Customer(
-                Long.parseLong(fields[0]),
-                fields[1],
-                fields[2],
-                LocalDate.parse(fields[3])
-        );
+        var id = Long.parseLong(fields[0]);
+        var name = fields[1];
+        var document = fields[2];
+        var birthdate = LocalDate.parse(fields[3]);
+        return new Customer(id, name, document, birthdate);
     };
     private static final Function<Customer, String> WRITE_CONVERTER = (customer) -> {
         return customer.getId() + CONTENT_SEPARATOR
@@ -43,11 +43,15 @@ public class CustomerFilePersistence extends TextFile implements Writer<Customer
     }
 
     @Override
-    public List<Customer> read() {
+    public Stream<Customer> read() {
         return filesInRootFolder()
                 .map(this::readContent)
-                .map(READ_CONVERTER)
-                .collect(Collectors.toList());
+                .map(READ_CONVERTER);
+    }
+
+    @Override
+    public Stream<Customer> search(String name) {
+        return read().filter(customer -> customer.getName().contains(name));
     }
 
     @Override

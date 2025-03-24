@@ -36,13 +36,15 @@ public class CustomerView {
             System.out.println("0 - Sair");
             System.out.println("1 - Cadastrar");
             System.out.println("2 - Consultar por id");
-            System.out.println("3 - Listar todos");
+            System.out.println("3 - Consultar por nome");
+            System.out.println("4 - Listar todos");
             option = scanner.nextLine();
             switch (option) {
                 case "0" -> System.out.println("Até mais....");
                 case "1" -> showRegister(scanner);
                 case "2" -> showSearch(scanner);
-                case "3" -> showAllCustomer();
+                case "3" -> showSearchByName(scanner);
+                case "4" -> showAllCustomer();
                 default -> System.out.println("Invalid option. Try again");
             }
         } while (!option.equalsIgnoreCase("0"));
@@ -51,7 +53,6 @@ public class CustomerView {
     private void showAllCustomer() {
         printHeader();
         var customers = searchUseCase.list();
-        customers.sort(Comparator.comparing(Customer::getId));
         customers.forEach(this::printCustomer);
     }
 
@@ -63,6 +64,14 @@ public class CustomerView {
                     printHeader();
                     printCustomer(customer);
                 }, () -> System.out.println("Nenhum cliente encontrado"));
+    }
+
+    private void showSearchByName(Scanner scanner) {
+        System.out.println("Informe o nome do cliente");
+        var name = scanner.nextLine();
+        printHeader();
+        searchUseCase.searchByName(name)
+                .forEach(this::printCustomer);
     }
 
     private void showRegister(Scanner scanner) {
